@@ -87,7 +87,7 @@ class ObjModel(ThreeDee):
 
 class BinaryStlModel(ThreeDee):
     """
-    Parser for ascii-encoded stl files.  File format reference:
+    Parser for binary-encoded stl files.  File format reference:
     http://en.wikipedia.org/wiki/STL_%28file_format%29#Binary_STL
     """
 
@@ -100,6 +100,20 @@ class BinaryStlModel(ThreeDee):
                 self.verts.append(struct.unpack("<3f", fileob.read(12)))
             fileob.read(2) # skip the attribute bytes
 
+class AsciiStlModel(ThreeDee):
+    """
+    Parser for ascii-encoded stl files.  File format reference:
+    http://en.wikipedia.org/wiki/STL_%28file_format%29#ASCII_STL
+    """
+
+    def __vector(self, line, expected=3):
+        nums = map(float, line.strip().split(" ")[1:])
+        return tuple(nums[:expected])
+
+    def load(self, fileob):
+        for line in fileob:
+            if "vertex" in line:
+                self.verts.append(self.__vector(line))
 
 def auto_detect(fileob, hint):
     """
@@ -114,10 +128,7 @@ def auto_detect(fileob, hint):
 
     if hint == "stl" or not hint:
         try:
-            # HACK Ascii formatted stls are similar enough to obj
-            # files that we can just use the same parser for both.
-            # Isn't that something?
-            return ObjModel(fileob)
+            return AsciiStlModel(fileob)
         except ThreeDeeParseError:
             pass
         except ValueError:
