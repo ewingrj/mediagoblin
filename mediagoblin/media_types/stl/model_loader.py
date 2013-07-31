@@ -36,7 +36,7 @@ class ThreeDee():
         self.max = [None, None, None]
         self.width = 0  # x axis
         self.depth = 0  # y axis
-        self.height = 0 # z axis
+        self.height = 0  # z axis
 
         self.load(fileob)
         if not len(self.verts):
@@ -56,12 +56,11 @@ class ThreeDee():
                         self.max[i] = num
 
         for i in range(3):
-            self.average[i]/=len(self.verts)
+            self.average[i] /= len(self.verts)
 
         self.width = abs(self.min[0] - self.max[0])
         self.depth = abs(self.min[1] - self.max[1])
         self.height = abs(self.min[2] - self.max[2])
-
 
     def load(self, fileob):
         """Override this method in your subclass."""
@@ -77,13 +76,13 @@ class ObjModel(ThreeDee):
     def __vector(self, line, expected=3):
         nums = map(float, line.strip().split(" ")[1:])
         return tuple(nums[:expected])
-    
+
     def load(self, fileob):
         for line in fileob:
             line = line.strip()
             if line[0] == "v":
                 self.verts.append(self.__vector(line))
-            
+
 
 class BinaryStlModel(ThreeDee):
     """
@@ -92,13 +91,14 @@ class BinaryStlModel(ThreeDee):
     """
 
     def load(self, fileob):
-        fileob.seek(80) # skip the header
+        fileob.seek(80)  # skip the header
         count = struct.unpack("<I", fileob.read(4))[0]
         for i in range(count):
-            fileob.read(12) # skip the normal vector
+            fileob.read(12)  # skip the normal vector
             for v in range(3):
                 self.verts.append(struct.unpack("<3f", fileob.read(12)))
-            fileob.read(2) # skip the attribute bytes
+            fileob.read(2)  # skip the attribute bytes
+
 
 class AsciiStlModel(ThreeDee):
     """
