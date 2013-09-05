@@ -81,6 +81,10 @@ add_route('mediagoblin.user_pages.collection_atom_feed',
           '/u/<string:user>/collection/<string:collection>/atom/',
           'mediagoblin.user_pages.views:collection_atom_feed')
 
+add_route('mediagoblin.user_pages.collection.media_home',
+          '/u/<string:user>/m/<string:media>/in/collection/<string:creator>-<string:collection>/',
+          'mediagoblin.user_pages.views:media_home')
+
 add_route('mediagoblin.user_pages.processing_panel',
           '/u/<string:user>/panel/',
           'mediagoblin.user_pages.views:processing_panel')

@@ -531,6 +531,34 @@ class CollectionItem(Base, CollectionItemMixin):
         UniqueConstraint('collection', 'media_entry'),
         {})
 
+    def url_to_prev(self, urlgen, **kwargs):
+        """get the next 'newer' entry by this user"""
+        collection_item = CollectionItem.query.filter(
+            (CollectionItem.collection == self.collection)
+            & (CollectionItem.added > self.added)).order_by(
+            CollectionItem.added).first()
+
+        if collection_item is not None:
+            # If the entry is not processed, get the next CollectionItem
+            if collection_item.get_media_entry.state != 'processed':
+                collection_item = collection_item.url_to_prev(urlgen)
+
+            return collection_item.url_for_self(urlgen, **kwargs)
+
+    def url_to_next(self, urlgen, **kwargs):
+        """get the next 'older' entry by this user"""
+        collection_item = CollectionItem.query.filter(
+            (CollectionItem.collection == self.collection)
+            & (CollectionItem.added < self.added)).order_by(
+            desc(CollectionItem.added)).first()
+
+        if collection_item is not None:
+            # If the entry is not processed, get the next CollectionItem
+            if collection_item.get_media_entry.state != 'processed':
+                collection_item = collection_item.url_to_next(urlgen)
+
+            return collection_item.url_for_self(urlgen, **kwargs)
+
     @property
     def dict_view(self):
         """A dict like view on this object"""

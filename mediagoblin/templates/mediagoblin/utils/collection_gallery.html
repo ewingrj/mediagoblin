@@ -26,7 +26,7 @@
                  {%- elif loop.last %} thumb_row_last{% endif %}">
         {% for item in row %}
           {% set media_entry = item.get_media_entry %}
-          {% set entry_url = media_entry.url_for_self(request.urlgen) %}
+          {% set entry_url = item.url_for_self(request.urlgen) %}
           <td class="media_thumbnail thumb_entry
                      {%- if loop.first %} thumb_entry_first
                      {%- elif loop.last %} thumb_entry_last{% endif %}">

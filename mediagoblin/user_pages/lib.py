@@ -19,7 +19,7 @@ from mediagoblin.tools.template import render_template
 from mediagoblin.tools.translate import pass_to_ugettext as _
 from mediagoblin import mg_globals
 from mediagoblin.db.base import Session
-from mediagoblin.db.models import CollectionItem
+from mediagoblin.db.models import CollectionItem, Collection, User
 
 
 def send_comment_email(user, comment, media, request):
@@ -75,3 +75,29 @@ def add_media_to_collection(collection, media, note=None, commit=True):
 
     if commit:
         Session.commit()
+
+
+def get_collection_item(collection_title, username, media_id):
+    """
+    Returns a CollectionItem.
+
+    Args:
+    collection_title - The title of the Collection the collectionItem belongs
+        too.
+    username - The username of the Collection creator.
+    media_id = The id of the MediaEntry of this CollectionItem
+    """
+    creator = User.query.filter_by(username=username).first().id
+
+    collection = Collection.query.filter_by(
+        title=collection_title,
+        creator=creator
+    ).first()
+
+    collection_item = collection.get_collection_items().filter_by(
+        media_entry=media_id).first()
+
+    if collection_item:
+        return collection_item
+    else:
+        return None

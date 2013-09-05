@@ -17,8 +17,13 @@
 #}
 
 {# Provide navigation links to neighboring media entries, if possible #}
-{% set prev_entry_url = media.url_to_prev(request.urlgen) %}
-{% set next_entry_url = media.url_to_next(request.urlgen) %}
+{% if collection_item %}
+  {% set prev_entry_url = collection_item.url_to_prev(request.urlgen) %}
+  {% set next_entry_url = collection_item.url_to_next(request.urlgen) %}
+{% else %}
+  {% set prev_entry_url = media.url_to_prev(request.urlgen) %}
+  {% set next_entry_url = media.url_to_next(request.urlgen) %}
+{% endif %}
 
 {% if prev_entry_url or next_entry_url %}
   <div class="navigation">

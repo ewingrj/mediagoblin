@@ -27,7 +27,8 @@ from mediagoblin.tools.text import cleaned_markdown_conversion
 from mediagoblin.tools.translate import pass_to_ugettext as _
 from mediagoblin.tools.pagination import Pagination
 from mediagoblin.user_pages import forms as user_forms
-from mediagoblin.user_pages.lib import add_media_to_collection
+from mediagoblin.user_pages.lib import (add_media_to_collection,
+    get_collection_item)
 from mediagoblin.notifications import trigger_notification, \
     add_comment_subscription, mark_comment_notification_seen
 from mediagoblin.decorators import (uses_pagination, get_user_media_entry,
@@ -146,6 +147,17 @@ def media_home(request, media, page, **kwargs):
 
     media_template_name = media.media_manager.display_template
 
+    if '/in/collection/' in request.path:
+        collection_args = request.path.split('/in/collection/')[1]
+        username = collection_args.split('-')[0]
+        # Get the collection title, stripping the '/' from the end
+        title = collection_args.split('-')[1][:-1]
+
+        collection_item = get_collection_item(title, username, media.id)
+
+    else:
+        collection_item = None
+
     return render_to_response(
         request,
         media_template_name,
@@ -153,6 +165,7 @@ def media_home(request, media, page, **kwargs):
          'comments': comments,
          'pagination': pagination,
          'comment_form': comment_form,
+         'collection_item': collection_item,
          'app_config': mg_globals.app_config})
 
 

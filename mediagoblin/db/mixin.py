@@ -340,3 +340,19 @@ class CollectionItemMixin(object):
         Run through Markdown and the HTML cleaner.
         """
         return cleaned_markdown_conversion(self.note)
+
+    def url_for_self(self, urlgen, **extra_args):
+        """
+        Generate an appropriate url for ourselves
+
+        Use a slug if we have one, else use our 'id'.
+        """
+        uploader = self.get_media_entry.get_uploader
+
+        return urlgen(
+            'mediagoblin.user_pages.collection.media_home',
+            user=uploader.username,
+            media=self.get_media_entry.slug_or_id,
+            creator=self.in_collection.get_creator.username,
+            collection=self.in_collection.title,
+            **extra_args)
